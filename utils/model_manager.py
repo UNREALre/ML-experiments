@@ -4,6 +4,7 @@ import pandas as pd
 import xgboost as xgb
 
 from catboost import CatBoostClassifier, CatBoostRegressor
+from sklearn import metrics
 from sklearn.compose import ColumnTransformer
 from sklearn.metrics import mean_squared_error, root_mean_squared_error, r2_score
 from sklearn.impute import SimpleImputer
@@ -191,3 +192,86 @@ class ModelManager:
         mean_target = np.mean(y_test)
 
         return {'mse': mse, 'rmse': rmse, 'rmse %': rmse/mean_target*100, 'r2': r2, 'model': pipeline}
+
+    @staticmethod
+    def evaluate_regression(model, x_val, y_val):
+        """
+        Вычисляет, выводит и возвращает набор стандартных метрик регрессии.
+
+        Args:
+            model: Обученная модель с методом .predict().
+            x_val (pd.DataFrame или np.ndarray): Валидационные признаки.
+            y_val (pd.Series или np.ndarray): Истинные значения для валидации.
+
+        Returns:
+            dict: Словарь с названиями метрик и их значениями.
+        """
+        # 1. Получаем предсказания
+        y_pred = model.predict(x_val)
+
+        # 2. Рассчитываем метрики из sklearn.metrics
+        r2 = metrics.r2_score(y_val, y_pred)
+        mse = metrics.mean_squared_error(y_val, y_pred)
+        mae = metrics.mean_absolute_error(y_val, y_pred)
+
+        # RMSE - это корень из MSE
+        rmse = np.sqrt(mse)
+        # Альтернативно: rmse = metrics.mean_squared_error(y_val, y_pred, squared=False)
+
+        # --- Метрики, чувствительные к значениям ---
+        # MSLE и RMSLE требуют, чтобы все значения y_val и y_pred были неотрицательными.
+        # MAPE требует, чтобы y_val не содержал нулей.
+
+        msle = np.nan  # Инициализируем как NaN на случай ошибки
+        rmsle_score = np.nan
+        mape = np.nan
+
+        # Проверка на отрицательные значения в y_val (для MSLE/RMSLE)
+        if np.any(y_val < 0):
+            print("Предупреждение: Обнаружены отрицательные значения в y_val. MSLE и RMSLE не могут быть вычислены.")
+        else:
+            # Некоторые модели могут предсказывать отрицательные значения, даже если y_val положительный.
+            # Для MSLE/RMSLE заменим отрицательные предсказания на 0.
+            y_pred_non_negative = np.maximum(y_pred, 0)
+            try:
+                msle = metrics.mean_squared_log_error(y_val, y_pred_non_negative)
+                rmsle_score = np.sqrt(msle)
+            except ValueError as e:
+                print(f"Ошибка при расчете MSLE/RMSLE: {e}")
+
+        # Проверка на нули в y_val (для MAPE)
+        if np.any(y_val == 0):
+            print(
+                "Предупреждение: Обнаружены нули в y_val. MAPE может быть неточным или вызвать ошибку. Расчет для ненулевых значений...")
+            # Рассчитываем MAPE только для ненулевых значений y_val
+            mask = y_val != 0
+            if np.any(mask):  # Если есть хоть какие-то ненулевые значения
+                mape = metrics.mean_absolute_percentage_error(y_val[mask], y_pred[mask])
+            # else: mape остается np.nan
+        else:
+            # Если нулей нет, считаем как обычно
+            mape = metrics.mean_absolute_percentage_error(y_val, y_pred)
+
+        # 3. Выводим результаты
+        print(f"R2 Score: {r2:.4f}")  # Форматируем для читаемости
+        print(f"MSE:      {mse:.4f}")
+        print(f"RMSE:     {rmse:.4f}")
+        print(f"MAE:      {mae:.4f}")
+        if not np.isnan(msle):
+            print(f"MSLE:     {msle:.4f}")
+        if not np.isnan(rmsle_score):
+            print(f"RMSLE:    {rmsle_score:.4f}")  # Корень из MSLE
+        if not np.isnan(mape):
+            print(f"MAPE:     {mape:.4f}")  # MAPE возвращается как доля, можно умножить на 100 для процентов
+
+        # 4. Возвращаем словарь
+        results = {
+            "R2": r2,
+            "MSE": mse,
+            "RMSE": rmse,
+            "MAE": mae,
+            "MSLE": msle,
+            "RMSLE": rmsle_score,
+            "MAPE": mape
+        }
+        return results

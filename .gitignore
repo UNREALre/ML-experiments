@@ -5,6 +5,8 @@
 *.tfevents
 *.tsv
 
+mlruns/
+
 /static
 
 # exclude everything
