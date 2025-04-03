@@ -15,7 +15,8 @@ class DataManager:
     @staticmethod
     def split_data_set_to_x_y(data_set, y_column):
         """Разделяет датасет на признаки и целевую переменную"""
-        return data_set.drop(columns=[y_column]), data_set[y_column]
+        ds_copy = data_set.copy()
+        return ds_copy.drop(columns=[y_column]), ds_copy[y_column]
 
     @staticmethod
     def analyze_missing_values(df):
