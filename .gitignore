@@ -4,6 +4,7 @@
 *.tmp
 *.tfevents
 *.tsv
+*.joblib
 
 mlruns/
 
