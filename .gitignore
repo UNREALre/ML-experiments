@@ -6,6 +6,9 @@
 *.tsv
 *.joblib
 
+/kaggle/housing_prices/catboost_info/*
+/kaggle/housing_prices/tabfpn-extensions/*
+
 mlruns/
 
 /static
