@@ -100,7 +100,7 @@ MSSubClass: Identifies the type of dwelling involved in the sale.
        190	2 FAMILY CONVERSION - ALL STYLES AND AGES
 
 MSZoning: Identifies the general zoning classification of the sale.
-		
+
        A	Agriculture
        C	Commercial
        FV	Floating Village Residential
@@ -189,7 +189,7 @@ Neighborhood: Physical locations within Ames city limits
        Veenker	Veenker
 			
 Condition1: Proximity to various conditions
-	
+
        Artery	Adjacent to arterial street
        Feedr	Adjacent to feeder street	
        Norm	Normal	
