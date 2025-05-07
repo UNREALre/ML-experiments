@@ -29,6 +29,15 @@ class DataManager:
         return ds_copy.drop(columns=[id_column]), ds_copy[id_column]
 
     @staticmethod
+    def show_unique_values(df):
+        """Выводит уникальные значения для всех колонок"""
+        for col in df.columns:
+            print(f"Колонка: {col}")
+            print(f"Уникальные значения: {df[col].unique()}")
+            print(f"Количество уникальных значений: {df[col].nunique()}")
+            print("-" * 50)
+
+    @staticmethod
     def analyze_missing_values(df):
         """Базовый анализ пропущенных значений"""
         # Общее количество пропущенных значений
