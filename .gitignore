@@ -5,6 +5,8 @@
 *.tfevents
 *.tsv
 *.joblib
+*.tf
+*.h5
 
 /kaggle/housing_prices/catboost_info/*
 /kaggle/housing_prices/tabfpn-extensions/*

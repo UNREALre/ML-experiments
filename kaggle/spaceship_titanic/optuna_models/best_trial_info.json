@@ -1,0 +1,26 @@
+{
+    "trial_number": 31,
+    "params": {
+        "n_layers": 6,
+        "first_layer_size": 256,
+        "layer_1_size": 80,
+        "layer_2_size": 36,
+        "layer_3_size": 16,
+        "regularization_type": "none",
+        "regularization_strength": 0.00011974892130585373,
+        "dropout_type": "constant",
+        "base_dropout": 0.45,
+        "activation": "relu",
+        "learning_rate": 0.007208798037387891,
+        "optimizer": "adamw",
+        "use_batch_norm": true,
+        "weight_decay": 3.6875570530318845e-05,
+        "early_stopping_patience": 8,
+        "lr_reduction_factor": 0.4217974731700441,
+        "lr_patience": 7,
+        "batch_size": 64
+    },
+    "val_accuracy": 0.8298850655555725,
+    "val_loss": 0.38040611147880554,
+    "val_auc": 0.9063107967376709
+}
